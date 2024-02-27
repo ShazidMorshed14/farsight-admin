@@ -19,3 +19,8 @@ export const addNewUser = async (formData) => {
 
   return response;
 };
+
+export const editUser = async (formData, id) => {
+  const response = await axios().put(`/admin/users/${id}`, formData);
+  return response;
+};
