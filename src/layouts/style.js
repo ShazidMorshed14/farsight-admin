@@ -2,7 +2,7 @@ import { createStyles } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   appShell: {
-    backgroundColor: "white !important",
+    backgroundColor: "#222 !important",
   },
 
   navTitle: {

@@ -33,6 +33,7 @@ const COLORS = {
   accent: "linear-gradient(310deg,#cb0c9f,#cb0c9f)",
   fontPrimary: "#FFFFFF",
   fontSecondary: "#67748E",
+  boxColor: "#2a2d3e",
 };
 
 export default COLORS;

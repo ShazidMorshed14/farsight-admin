@@ -1,8 +1,9 @@
-import { createStyles } from "@mantine/core";
+import { createStyles, rem } from "@mantine/core";
+//import COLORS from '../constants/colors';
 
 const useStyles = createStyles((theme) => ({
   appShell: {
-    backgroundColor: theme.colors.gray[0],
+    backgroundColor: "white !important",
   },
 
   navTitle: {
@@ -34,11 +35,32 @@ const useStyles = createStyles((theme) => ({
     paddingRight: theme.spacing.lg * 2,
   },
 
-  links: {
-    marginLeft: -theme.spacing.md,
-    marginRight: -theme.spacing.md,
-  },
+  // links: {
+  //   marginLeft: -theme.spacing.md,
+  //   marginRight: -theme.spacing.md,
+  // },
+  //some comment
+  link: {
+    width: rem(180),
+    height: rem(50),
+    borderRadius: "0.5rem !important",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    color: theme.white,
+    opacity: 0.85,
+    padding: "0em 1em",
 
+    "&:hover": {
+      opacity: 1,
+      color: "#ffffff",
+      backgroundColor: "#696cff !important",
+      borderColor: "#696cff !important",
+      boxShadow: "0 0.125rem 0.25rem 0 rgba(105, 108, 255, 0.4)",
+      border: "1px solid transparent",
+      borderRadius: " 0.375rem",
+    },
+  },
   linksInner: {
     paddingTop: theme.spacing.xl,
     paddingBottom: theme.spacing.xl,
@@ -50,6 +72,17 @@ const useStyles = createStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+  },
+
+  active: {
+    opacity: 1,
+    color: "#fff",
+    backgroundColor: "#696cff !important",
+    borderColor: "#696cff !important",
+    boxShadow: "0 0.125rem 0.25rem 0 rgba(105, 108, 255, 0.4)",
+    border: "1px solid transparent",
+    borderRadius: " 0.375rem",
+    fontWeight: "bold",
   },
 }));
 

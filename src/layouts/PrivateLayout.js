@@ -21,6 +21,8 @@ import { IconLogout } from "@tabler/icons-react";
 import { closeAllModals, openConfirmModal } from "@mantine/modals";
 import { authActions } from "../store/reducers/authReducer";
 import { useQueryClient } from "@tanstack/react-query";
+import COLORS from "../constants/colors";
+import NavbarLinks from "./NavbarLinks";
 
 const PrivateLayout = () => {
   const classes = useStyles();
@@ -54,14 +56,25 @@ const PrivateLayout = () => {
   return (
     <AppShell
       className={classes.appShell}
+      styles={(theme) => ({
+        main: {
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[7]
+              : theme.colors.gray[1],
+        },
+      })}
       navbarOffsetBreakpoint="sm"
       navbar={
         <Navbar
           width={{
-            base: 200,
+            base: 220,
           }}
           height="100vh"
           p="md"
+          sx={() => ({
+            backgroundColor: COLORS.boxColor,
+          })}
         >
           <Navbar.Section className={classes.navTitle}>
             <Text className={classes.navTitleLink}>
@@ -83,14 +96,8 @@ const PrivateLayout = () => {
               </UnstyledButton>
             </Text>
           </Navbar.Section>
-          <Navbar.Section grow component={ScrollArea} className={classes.links}>
-            <Space h={15} />
-            <div className={classes.linksInner}>
-              {navItems.map((item, index) => (
-                <NavBarItem key={index} {...item} />
-              ))}
-            </div>
-            <Space h={15} />
+          <Navbar.Section grow mt={50}>
+            <NavbarLinks />
           </Navbar.Section>
           <Navbar.Section className={classes.navFooter}>
             <Text align="center" fz="xs" c="dimmed">
