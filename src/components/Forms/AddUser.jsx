@@ -114,11 +114,7 @@ const AddUser = ({ onUpdate }) => {
               label="Phone"
               size="xs"
               withAsterisk
-              icon={
-                <Text px="sm" size="xs">
-                  +880
-                </Text>
-              }
+              placeholder="+880123456789"
               {...form.getInputProps("phone")}
             />
           </div>

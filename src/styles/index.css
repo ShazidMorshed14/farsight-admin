@@ -1,0 +1,16 @@
+.small_gif_image {
+  height: 150px;
+  width: 150px;
+}
+
+img {
+  height: 100%;
+  width: 100%;
+}
+
+/* flex classes */
+.flex_col_center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

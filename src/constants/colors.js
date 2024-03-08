@@ -31,7 +31,7 @@ const COLORS = {
   primaryBackground: "#222222",
   //accent: '#22A39F',
   accent: "linear-gradient(310deg,#cb0c9f,#cb0c9f)",
-  fontPrimary: "#222",
+  fontPrimary: "#FFFFFF",
   fontSecondary: "#67748E",
 };
 

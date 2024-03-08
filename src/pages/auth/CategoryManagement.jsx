@@ -1,31 +1,83 @@
-import {
-  ActionIcon,
-  Button,
-  Flex,
-  Loader,
-  LoadingOverlay,
-  Modal,
-  Stack,
-  Text,
-  Tooltip,
-} from "@mantine/core";
-import { IconEdit, IconPlus } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import { Button, Flex, Loader, Modal, Stack, Text } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
+import { IconPlus } from "@tabler/icons-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
 import AddCategory from "../../components/Forms/AddCategory";
 import EditCategory from "../../components/Forms/EditCategory";
+import CommonHeader from "../../components/Global/CommonHeader";
 import ServerErrorBox from "../../components/Global/ServerErrorBox";
+import CategoryTable from "../../components/Tables/CategoryTable";
 import COLORS from "../../constants/colors";
-import { fetchCategoriesPageless } from "../../services/categories";
 import {
-  isArrayAndHasContent,
-  isObjectAndHasProperties,
-} from "../../utils/utils";
+  deleteCategory,
+  fetchCategoriesPageless,
+} from "../../services/categories";
+import { NotificationUtil } from "../../utils/notifications";
 
 const CategoryManagement = () => {
-  const [addCategoryModal, setAddCategoryModal] = useState(false);
-  const [editCategoryModal, setEditCategoryModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(false);
+  useEffect(() => {
+    document.title = "Categories | Farsight";
+  }, []);
+
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  //modals states
+  const [itemAddModal, setItemAddModal] = useState(false);
+  const [itemEditModal, setItemEditModal] = useState(false);
+
+  const handleItemAdd = (item) => {
+    setSelectedItem(item);
+    setItemAddModal(true);
+  };
+
+  const handleItemEdit = (item) => {
+    setSelectedItem(item);
+    setItemEditModal(true);
+  };
+
+  const handleItemDelete = (item) => {
+    ConfirmDeleteModal(item?._id);
+  };
+
+  const ConfirmDeleteModal = (id) => {
+    openConfirmModal({
+      title: "Confirm",
+      styles: () => ({
+        title: {
+          fontSize: "22px",
+          fontWeight: "bold",
+        },
+      }),
+      children: (
+        <Text size="sm">Are you sure you want to delete this category?</Text>
+      ),
+      confirmProps: { color: "red" },
+      labels: { confirm: "Confirm", cancel: "Cancel" },
+      onConfirm: () => {
+        deleteMutate(id);
+      },
+    });
+  };
+
+  const { mutate: deleteMutate, isLoading: isDeleting } = useMutation({
+    mutationFn: async (id) => await deleteCategory(id),
+    onSuccess: (data) => {
+      NotificationUtil({
+        success: true,
+        title: "Success",
+        message: data?.data?.message,
+      });
+      refetch();
+    },
+    onError: (error) => {
+      NotificationUtil({
+        success: false,
+        title: "Error",
+        message: error.response.data.message,
+      });
+    },
+  });
 
   //fetching patient only
   const { data, isLoading, error, isFetching, refetch } = useQuery({
@@ -41,9 +93,7 @@ const CategoryManagement = () => {
       <div className="card">
         <div className="card-body">
           <Flex w="100%" justify="space-between" align="center" my="sm">
-            <Text weight="bold" fz="md" color={COLORS.fontPrimary}>
-              Category Management
-            </Text>
+            <CommonHeader title="Category Management" />
             <Flex gap={10}>
               <Button className="primary_btn" leftIcon={<IconPlus />} size="xs">
                 Add Category
@@ -72,53 +122,14 @@ const CategoryManagement = () => {
 
   const { data: categoryData } = data?.data;
 
-  //render categories in list
-  const renderCategories = (categories) => {
-    let myCategories = [];
-
-    for (let category of categories) {
-      myCategories.push(
-        <li key={category._id} style={{ padding: "1em 0em" }}>
-          <Flex gap={10}>
-            {" "}
-            {category.name}
-            <Tooltip label="Edit">
-              <ActionIcon
-                radius="xs"
-                size="lg"
-                onClick={() => {
-                  setSelectedItem(category);
-                  setEditCategoryModal(true);
-                }}
-                color="yellow"
-                variant="light"
-              >
-                <IconEdit size={18} />
-              </ActionIcon>
-            </Tooltip>
-          </Flex>
-          {isArrayAndHasContent(category.children) && (
-            <ul>{renderCategories(category.children)}</ul>
-          )}
-        </li>
-      );
-    }
-
-    return myCategories;
-  };
-
   return (
     <div>
-      <LoadingOverlay
-        visible={isFetching}
-        zIndex={1000}
-        overlayProps={{ radius: "sm", blur: 2 }}
-      />
+      {/* MODALS */}
 
-      {/* add modal */}
       <Modal
-        opened={addCategoryModal}
-        onClose={() => setAddCategoryModal(false)}
+        opened={itemAddModal}
+        closeOnClickOutside={false}
+        onClose={() => setItemAddModal(false)}
         title={<Text fw="600">Add Category</Text>}
         centered
         styles={() => ({
@@ -126,27 +137,27 @@ const CategoryManagement = () => {
             fontSize: "24px",
             fontWeight: "bold",
           },
+          body: {
+            minWidth: "80vw",
+          },
         })}
-        size="lg"
+        size="auto"
       >
         <AddCategory
-          onClose={() => {
-            setAddCategoryModal(false);
-            setSelectedItem(null);
-          }}
           onUpdate={() => {
-            setAddCategoryModal(false);
             refetch();
+            setItemAddModal(false);
           }}
-          defaultValues={selectedItem}
-          update={isObjectAndHasProperties(selectedItem)}
+          onClose={() => {
+            setItemAddModal(false);
+          }}
         />
       </Modal>
 
-      {/* edit modal */}
       <Modal
-        opened={editCategoryModal}
-        onClose={() => setEditCategoryModal(false)}
+        opened={selectedItem && itemEditModal}
+        closeOnClickOutside={false}
+        onClose={() => setItemEditModal(false)}
         title={<Text fw="600">Edit Category</Text>}
         centered
         styles={() => ({
@@ -154,22 +165,27 @@ const CategoryManagement = () => {
             fontSize: "24px",
             fontWeight: "bold",
           },
+          body: {
+            minWidth: "80vw",
+          },
         })}
-        size="lg"
+        size="auto"
       >
         <EditCategory
-          onClose={() => {
-            setEditCategoryModal(false);
-            setSelectedItem(null);
-          }}
+          defaultValues={selectedItem}
           onUpdate={() => {
-            setEditCategoryModal(false);
+            setSelectedItem(null);
+            setItemEditModal(false);
             refetch();
           }}
-          defaultValues={selectedItem}
-          update={isObjectAndHasProperties(selectedItem)}
+          onClose={() => {
+            setItemEditModal(false);
+            setSelectedItem(null);
+          }}
         />
       </Modal>
+
+      {/* MODALS END*/}
 
       <Flex w="100%" justify="space-between" align="center" my="sm">
         <Text weight="bold" fz="md" color={COLORS.fontPrimary}>
@@ -177,7 +193,7 @@ const CategoryManagement = () => {
         </Text>
         <Flex gap={10}>
           <Button
-            onClick={() => setAddCategoryModal(true)}
+            onClick={() => setItemAddModal(true)}
             className="primary_btn"
             leftIcon={<IconPlus />}
             size="xs"
@@ -187,9 +203,30 @@ const CategoryManagement = () => {
         </Flex>
       </Flex>
 
-      <div>
-        <ul>{renderCategories(categoryData)}</ul>
-      </div>
+      <>
+        {isFetching ? (
+          <>
+            <Stack
+              sx={{
+                minHeight: "75vh",
+              }}
+              justify="center"
+              align="center"
+            >
+              <Loader size="md" variant="oval" />
+            </Stack>
+          </>
+        ) : (
+          <>
+            <CategoryTable
+              data={categoryData}
+              handleItemAdd={handleItemAdd}
+              handleItemEdit={handleItemEdit}
+              handleItemDelete={handleItemDelete}
+            />
+          </>
+        )}
+      </>
     </div>
   );
 };

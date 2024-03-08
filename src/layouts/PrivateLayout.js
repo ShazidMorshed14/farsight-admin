@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import NavBarItem from "../components/NavbarItem";
 import navItems from "../constants/nav-items";
-import useStyles from "../styles/nav-styles";
+import useStyles from "./style";
 import { useDispatch, useSelector } from "react-redux";
 import { appEnv } from "../apps/App";
 import { IconLogout } from "@tabler/icons-react";
@@ -50,6 +50,7 @@ const PrivateLayout = () => {
       },
     });
   };
+
   return (
     <AppShell
       className={classes.appShell}

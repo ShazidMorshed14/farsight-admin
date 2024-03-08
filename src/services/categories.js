@@ -42,3 +42,9 @@ export const updateCategory = async (formData, id) => {
 
   return response;
 };
+
+export const deleteCategory = async (id) => {
+  const response = await axios().delete(`/category/delete/${id}`);
+
+  return response;
+};

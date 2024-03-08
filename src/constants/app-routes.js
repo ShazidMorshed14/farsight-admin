@@ -3,6 +3,7 @@ import Dashboard from "../pages/auth/Dashboard";
 import OrderManagement from "../pages/auth/OrderManagement";
 import ProductManagement from "../pages/auth/ProductManagement";
 import SignIn from "../pages/auth/Signin";
+import SubCategoryManagement from "../pages/auth/SubCategoryManagement";
 import UserManagement from "../pages/auth/UserManagement";
 import * as urls from "./app-urls";
 
@@ -22,6 +23,12 @@ const routes = [
   {
     path: urls.CATEGORIES,
     Element: CategoryManagement,
+    isIndexUrl: false,
+    isProtected: true,
+  },
+  {
+    path: urls.SUBCATEGORIES,
+    Element: SubCategoryManagement,
     isIndexUrl: false,
     isProtected: true,
   },
