@@ -46,6 +46,7 @@ const CategoryTable = ({ data, handleItemEdit, handleItemDelete }) => {
           {product?.categoryImage ? (
             <Image
               src={product?.categoryImage}
+              alt={product?.categoryImage}
               height={50}
               width={50}
               key={index}
@@ -61,6 +62,7 @@ const CategoryTable = ({ data, handleItemEdit, handleItemDelete }) => {
           {product?.categoryAppImage ? (
             <Image
               src={product?.categoryAppImage}
+              alt={product?.categoryAppImage}
               height={50}
               width={50}
               key={index}

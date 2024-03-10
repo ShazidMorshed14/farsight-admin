@@ -30,6 +30,8 @@ import {
   fetchSubCategoriesPageless,
 } from "../../services/subcategories";
 import SearchInput from "../../components/Global/SearchInput";
+import AddSubCategory from "../../components/Forms/AddSubCategory";
+import EditSubCategory from "../../components/Forms/EditSubCategory";
 
 const SubCategoryManagement = () => {
   useEffect(() => {
@@ -172,7 +174,7 @@ const SubCategoryManagement = () => {
         opened={itemAddModal}
         closeOnClickOutside={false}
         onClose={() => setItemAddModal(false)}
-        title={<Text fw="600">Add Category</Text>}
+        title={<Text fw="600">Add Sub-Category</Text>}
         centered
         styles={() => ({
           title: {
@@ -185,7 +187,7 @@ const SubCategoryManagement = () => {
         })}
         size="auto"
       >
-        {/* <AddCategory
+        <AddSubCategory
           onUpdate={() => {
             refetch();
             setItemAddModal(false);
@@ -193,15 +195,14 @@ const SubCategoryManagement = () => {
           onClose={() => {
             setItemAddModal(false);
           }}
-        /> */}
-        add subcategory
+        />
       </Modal>
 
       <Modal
         opened={selectedItem && itemEditModal}
         closeOnClickOutside={false}
         onClose={() => setItemEditModal(false)}
-        title={<Text fw="600">Edit Category</Text>}
+        title={<Text fw="600">Edit Sub-Category</Text>}
         centered
         styles={() => ({
           title: {
@@ -214,7 +215,7 @@ const SubCategoryManagement = () => {
         })}
         size="auto"
       >
-        {/* <EditCategory
+        <EditSubCategory
           defaultValues={selectedItem}
           onUpdate={() => {
             setSelectedItem(null);
@@ -225,8 +226,7 @@ const SubCategoryManagement = () => {
             setItemEditModal(false);
             setSelectedItem(null);
           }}
-        /> */}
-        edit sub category
+        />
       </Modal>
 
       {/* MODALS END*/}

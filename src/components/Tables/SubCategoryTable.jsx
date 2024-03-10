@@ -45,9 +45,10 @@ const SubCategoryTable = ({ data, handleItemEdit, handleItemDelete }) => {
 
       <td>
         <Center>
-          {product?.categoryImage ? (
+          {product?.subCategoryImage ? (
             <Image
-              src={product?.categoryImage}
+              src={product?.subCategoryImage}
+              alt={product?.subCategoryImage}
               height={50}
               width={50}
               key={index}
@@ -60,9 +61,10 @@ const SubCategoryTable = ({ data, handleItemEdit, handleItemDelete }) => {
 
       <td>
         <Center>
-          {product?.categoryAppImage ? (
+          {product?.subCategoryAppImage ? (
             <Image
-              src={product?.categoryAppImage}
+              src={product?.subCategoryAppImage}
+              alt={product?.subCategoryAppImage}
               height={50}
               width={50}
               key={index}
