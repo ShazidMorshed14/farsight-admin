@@ -133,11 +133,10 @@ const EditSubCategory = ({ onClose, onUpdate, defaultValues }) => {
 
     if (isArrayAndHasContent(selectedCategories)) {
       selectedCategories.forEach((cat) => {
-        apiFormData.append(`categories`, cat);
+        apiFormData.append("categories", cat);
       });
     }
 
-    console.log(apiFormData);
     ConfirmModal(apiFormData);
   };
 
@@ -241,9 +240,15 @@ const EditSubCategory = ({ onClose, onUpdate, defaultValues }) => {
               <Flex direction="column" gap={10} py="sm">
                 <Text>Already Assigned Categories</Text>
 
-                <Flex gap={10}>
+                <Flex gap={10} wrap="flex-wrap">
                   {defaultValues?.categories?.map((cat, index) => {
-                    return <Badge key={index}>{cat?.name}</Badge>;
+                    return (
+                      <div>
+                        <Badge key={index} size="lg">
+                          {cat?.name}
+                        </Badge>
+                      </div>
+                    );
                   })}
                 </Flex>
 

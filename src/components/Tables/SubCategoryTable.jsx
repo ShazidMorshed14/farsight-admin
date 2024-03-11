@@ -13,6 +13,7 @@ import {
   IconEdit,
   IconEye,
   IconTrash,
+  IconTrashFilled,
   IconUserCircle,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
@@ -21,7 +22,12 @@ import React from "react";
 import TableComponent from "../Global/TableComponent";
 import { isArrayAndHasContent } from "../../utils/utils";
 
-const SubCategoryTable = ({ data, handleItemEdit, handleItemDelete }) => {
+const SubCategoryTable = ({
+  data,
+  handleItemEdit,
+  handleItemDelete,
+  handleCategoryRemove,
+}) => {
   const ths = (
     <tr>
       <th>Name</th>
@@ -81,12 +87,29 @@ const SubCategoryTable = ({ data, handleItemEdit, handleItemDelete }) => {
             maxWidth: "400px",
           }}
         >
-          <Flex justify="flex-start" align="center" gap={10}>
+          <Flex justify="flex-start" align="center" gap={10} wrap="wrap">
             {isArrayAndHasContent(product?.categories) &&
               product?.categories?.map((item, index) => {
                 return (
-                  <Badge key={index} variant="filled">
-                    {item?.name}
+                  <Badge key={index} size="lg">
+                    <Flex align="center" gap={5}>
+                      {item?.name}{" "}
+                      <Tooltip label={"Remove"}>
+                        <ActionIcon
+                          // variant="filled"
+                          color="white"
+                          onClick={() =>
+                            handleCategoryRemove(
+                              product?._id,
+                              item?._id,
+                              product?.categories
+                            )
+                          }
+                        >
+                          <IconTrashFilled size={16} />
+                        </ActionIcon>
+                      </Tooltip>
+                    </Flex>
                   </Badge>
                 );
               })}

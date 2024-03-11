@@ -44,3 +44,12 @@ export const deleteSubCategory = async (id) => {
 
   return response;
 };
+
+export const removeCategoryFromSubCategory = async (values) => {
+  const response = await axios().post(
+    "/subcategory/remove-category-from-subcategory",
+    values
+  );
+
+  return response;
+};

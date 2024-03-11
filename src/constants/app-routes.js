@@ -1,5 +1,6 @@
 import CategoryManagement from "../pages/auth/CategoryManagement";
 import Dashboard from "../pages/auth/Dashboard";
+import OptionManagement from "../pages/auth/OptionManagement";
 import OrderManagement from "../pages/auth/OrderManagement";
 import ProductManagement from "../pages/auth/ProductManagement";
 import SignIn from "../pages/auth/Signin";
@@ -47,6 +48,12 @@ const routes = [
   {
     path: urls.USERS,
     Element: UserManagement,
+    isIndexUrl: false,
+    isProtected: true,
+  },
+  {
+    path: urls.OPTIONS,
+    Element: OptionManagement,
     isIndexUrl: false,
     isProtected: true,
   },

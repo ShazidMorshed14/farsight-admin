@@ -3,6 +3,7 @@ import {
   IconLayoutDashboard,
   IconMoneybag,
   IconPackages,
+  IconSettingsAutomation,
   IconSubtask,
   IconUsers,
 } from "@tabler/icons-react";
@@ -28,6 +29,11 @@ const navBarList = [
     label: "Products",
     icon: IconPackages,
     link: urls.PRODUCTS,
+  },
+  {
+    label: "Options",
+    icon: IconSettingsAutomation,
+    link: urls.OPTIONS,
   },
   {
     label: "Orders",

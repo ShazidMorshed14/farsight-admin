@@ -28,10 +28,12 @@ import SubCategoryTable from "../../components/Tables/SubCategoryTable";
 import {
   deleteSubCategory,
   fetchSubCategoriesPageless,
+  removeCategoryFromSubCategory,
 } from "../../services/subcategories";
 import SearchInput from "../../components/Global/SearchInput";
 import AddSubCategory from "../../components/Forms/AddSubCategory";
 import EditSubCategory from "../../components/Forms/EditSubCategory";
+import { isArrayAndHasContent } from "../../utils/utils";
 
 const SubCategoryManagement = () => {
   useEffect(() => {
@@ -73,6 +75,73 @@ const SubCategoryManagement = () => {
   const handleItemDelete = (item) => {
     ConfirmDeleteModal(item?._id);
   };
+
+  const handleCategoryRemove = (
+    subCategoryId,
+    categoryId,
+    assignedCategoriesList
+  ) => {
+    const assignedCatSimpleList =
+      assignedCategoriesList?.map((cat) => cat?._id) || [];
+
+    if (
+      isArrayAndHasContent(assignedCatSimpleList) &&
+      assignedCatSimpleList.length > 1
+    ) {
+      const reqBody = {
+        subCategoryId: subCategoryId,
+        categoryId: categoryId,
+      };
+
+      ConfirmCategoryRemoveModal(reqBody);
+    } else {
+      NotificationUtil({
+        success: false,
+        title: "Category Must be assigned",
+        message: "Atleast one category must be selected",
+      });
+    }
+  };
+
+  const ConfirmCategoryRemoveModal = (values) => {
+    openConfirmModal({
+      title: "Confirm",
+      styles: () => ({
+        title: {
+          fontSize: "22px",
+          fontWeight: "bold",
+        },
+      }),
+      children: (
+        <Text size="sm">Are you sure you want to remove this category?</Text>
+      ),
+      confirmProps: { color: "red" },
+      labels: { confirm: "Confirm", cancel: "Cancel" },
+      onConfirm: () => {
+        categoryRemoveMutate(values);
+      },
+    });
+  };
+
+  const { mutate: categoryRemoveMutate, isLoading: isCategoryRemoving } =
+    useMutation({
+      mutationFn: async (values) => await removeCategoryFromSubCategory(values),
+      onSuccess: (data) => {
+        NotificationUtil({
+          success: true,
+          title: "Success",
+          message: data?.data?.message,
+        });
+        refetch();
+      },
+      onError: (error) => {
+        NotificationUtil({
+          success: false,
+          title: "Error",
+          message: error.response.data.message,
+        });
+      },
+    });
 
   const ConfirmDeleteModal = (id) => {
     openConfirmModal({
@@ -303,6 +372,7 @@ const SubCategoryManagement = () => {
               handleItemAdd={handleItemAdd}
               handleItemEdit={handleItemEdit}
               handleItemDelete={handleItemDelete}
+              handleCategoryRemove={handleCategoryRemove}
             />
           </>
         )}
