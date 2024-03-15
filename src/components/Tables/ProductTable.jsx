@@ -13,13 +13,15 @@ import dayjs from "dayjs";
 import React from "react";
 
 import TableComponent from "../Global/TableComponent";
+import { isArrayAndHasContent } from "../../utils/utils";
 
 const ProductTable = ({ data, handleSelectItem, setProductDetailsModal }) => {
   const ths = (
     <tr>
       <th>Name</th>
       <th>Images</th>
-      <th>Category</th>
+      <th>Categories</th>
+      <th>Sub-Categories</th>
       <th>Price</th>
       <th>Quantity</th>
       <th>Status</th>
@@ -86,17 +88,62 @@ const ProductTable = ({ data, handleSelectItem, setProductDetailsModal }) => {
             maxWidth: "500px",
           }}
         >
-          <Flex gap={10} wrap="wrap">
-            {product?.productPictures.map((img, index) => {
-              return (
-                <Image src={img?.img} height={50} width={50} key={index} />
-              );
-            })}
-          </Flex>
+          {isArrayAndHasContent(product?.productPictures) ? (
+            <>
+              <Flex gap={10} wrap="wrap">
+                {product?.productPictures.map((img, index) => {
+                  return (
+                    <Image src={img?.img} height={50} width={50} key={index} />
+                  );
+                })}
+              </Flex>
+            </>
+          ) : (
+            <>No Image</>
+          )}
         </Stack>
       </td>
 
-      <td>{product?.category?.name}</td>
+      <td>
+        <Stack
+          sx={{
+            maxWidth: "500px",
+          }}
+        >
+          {isArrayAndHasContent(product?.categories) ? (
+            <>
+              <Flex gap={10} wrap="wrap">
+                {product?.categories.map((cat, index) => {
+                  return <Badge key={index}>{cat?.name}</Badge>;
+                })}
+              </Flex>
+            </>
+          ) : (
+            <>No Categories</>
+          )}
+        </Stack>
+      </td>
+
+      <td>
+        <Stack
+          sx={{
+            maxWidth: "500px",
+          }}
+        >
+          {isArrayAndHasContent(product?.subcategories) ? (
+            <>
+              <Flex gap={10} wrap="wrap">
+                {product?.subcategories.map((subcat, index) => {
+                  return <Badge key={index}>{subcat?.name}</Badge>;
+                })}
+              </Flex>
+            </>
+          ) : (
+            <>No Sub-Categories</>
+          )}
+        </Stack>
+      </td>
+
       <td>
         <Text fw={600} fz="md" align="center">
           {product?.price || 0} BDT

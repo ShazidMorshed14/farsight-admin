@@ -7,10 +7,17 @@ export const fetchProducts = async (context) => {
       pageSize: context.queryKey[2],
       name: context.queryKey[3],
       sku: context.queryKey[4],
-      status: context.queryKey[5],
-      category: context.queryKey[6],
-      pageLess: context.queryKey[7],
     },
   });
+  return response;
+};
+
+export const addNewProduct = async (formData) => {
+  const config = {
+    headers: { "content-type": "multipart/form-data" },
+  };
+
+  const response = await axios().post("/product/create", formData, config);
+
   return response;
 };
