@@ -21,3 +21,9 @@ export const addNewProduct = async (formData) => {
 
   return response;
 };
+
+export const updateProductJson = async (formData, id) => {
+  const response = await axios().put(`/product/update/${id}`, formData);
+
+  return response;
+};

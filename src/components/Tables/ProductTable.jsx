@@ -47,7 +47,7 @@ const ProductTable = ({ data, handleSelectItem, setProductDetailsModal }) => {
                   <Text fw={600} fz="xs">
                     {product?.name && product?.name.length > 12
                       ? `${product?.name.slice(0, 20)}...`
-                      : "N/A"}
+                      : product?.name}
                   </Text>
                 </HoverCard.Target>
                 <HoverCard.Dropdown>
@@ -61,17 +61,6 @@ const ProductTable = ({ data, handleSelectItem, setProductDetailsModal }) => {
                     <Text color="yellow" fw={600} fz="xs">
                       Slug: {product?.slug}
                     </Text>
-                    <div>
-                      <Text fw={600} py="xs">
-                        Product Description:
-                      </Text>
-                      <div
-                        style={{ maxWidth: "400px" }}
-                        dangerouslySetInnerHTML={{
-                          __html: product?.description,
-                        }}
-                      />
-                    </div>
                   </Flex>
                 </HoverCard.Dropdown>
               </HoverCard>

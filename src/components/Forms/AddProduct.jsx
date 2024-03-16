@@ -20,6 +20,7 @@ import {
   Group,
   Center,
   Box,
+  createStyles,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { NotificationUtil } from "../../utils/notifications";
@@ -27,16 +28,49 @@ import { isArrayAndHasContent } from "../../utils/utils";
 import axios from "../../services/axios";
 import { openConfirmModal } from "@mantine/modals";
 import JoditEditor from "jodit-react";
-import { addNewProduct } from "../../services/products";
+import { addNewProduct, updateProductJson } from "../../services/products";
 import NoFileSelectedBox from "../../pages/global/NoFileSelectedBox";
+import { fetchShapes } from "../../services/shape";
+import ProductVariants from "./ProductVariants";
+
+const useStyles = createStyles(() => ({
+  shapeSelectBox: {
+    backgroundColor: "white",
+    cursor: "pointer",
+    borderRadius: "8px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+
+    "&:hover": {
+      backgroundColor: "gold",
+      color: "white",
+    },
+  },
+  shapeSelectBoxActive: {
+    backgroundColor: "gold",
+    cursor: "pointer",
+    borderRadius: "8px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+
+    "&:hover": {
+      backgroundColor: "gold",
+      color: "white",
+    },
+  },
+}));
 
 const AddProduct = ({ onClose, onUpdate }) => {
+  const { classes } = useStyles();
+
   const queryClient = useQueryClient();
 
   const descriptionRef = useRef(null);
 
   //stepper steps
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(1);
   const nextStep = () =>
     setActive((current) => (current < 3 ? current + 1 : current));
   const prevStep = () =>
@@ -45,36 +79,22 @@ const AddProduct = ({ onClose, onUpdate }) => {
   const [files, setFiles] = useState([]);
   const [productDescription, setProductDescription] = useState(null);
   const [shape, setShape] = useState(null);
+  const [newProductDetails, setNewProductDetails] = useState(null);
+  console.log(newProductDetails);
 
   const form = useForm({
     initialValues: {
       name: "",
       price: 0,
       description: "",
-      category: "",
       quantity: 0,
+      discount_amount: 0,
     },
 
     //8192
     validate: {
       name: (value) => (value.length < 1 ? "Product Name must be given" : null),
-      category: (value) => (value.length < 1 ? "category must be given" : null),
     },
-  });
-
-  //fetching categories list
-  const {
-    data: categoryData,
-    isLoading,
-    error,
-    isFetching,
-    refetch,
-  } = useQuery({
-    queryKey: ["fetch-categories-list"],
-    queryFn: fetchCategoriesList,
-    refetchOnWindowFocus: false,
-    keepPreviousData: true,
-    retry: false,
   });
 
   const handleFileChange = (selectedFiles) => {
@@ -96,7 +116,7 @@ const AddProduct = ({ onClose, onUpdate }) => {
       NotificationUtil({
         success: false,
         title: "File Limit Exceeded",
-        message: "Can't Select More than 1 File",
+        message: "Can't Select More than 5 File",
       });
       setFiles([]);
     } else {
@@ -114,7 +134,11 @@ const AddProduct = ({ onClose, onUpdate }) => {
       apiFormData.append("images", file);
     });
 
-    apiFormData.append(`name`, values.name);
+    apiFormData.append("name", values.name);
+    apiFormData.append("price", values.price);
+    apiFormData.append("discount_amount", values.discount_amount);
+    apiFormData.append("quantity", values.quantity);
+    apiFormData.append("description", productDescription);
 
     ConfirmModal(apiFormData);
   };
@@ -149,7 +173,53 @@ const AddProduct = ({ onClose, onUpdate }) => {
       });
       form.reset();
       setFiles([]);
-      onUpdate();
+      setNewProductDetails(data?.data?.data);
+      setActive(1);
+    },
+    onError: (error) => {
+      NotificationUtil({
+        success: false,
+        title: "Error",
+        message: error.response.data.message,
+      });
+    },
+  });
+
+  const handleEditSubmit = () => {
+    ConfirmModalForUpdate({});
+  };
+
+  const ConfirmModalForUpdate = (values) => {
+    openConfirmModal({
+      title: "Confirm",
+      styles: () => ({
+        title: {
+          fontSize: "22px",
+          fontWeight: "bold",
+        },
+      }),
+      children: (
+        <Text size="sm">Are you sure you want to update this Product?</Text>
+      ),
+      confirmProps: { color: "blue" },
+      labels: { confirm: "Confirm", cancel: "Cancel" },
+      onConfirm: () => {
+        updateMutate(values);
+      },
+    });
+  };
+
+  const { mutate: updateMutate, isLoading: isUpdating } = useMutation({
+    mutationFn: async (values) => await updateProductJson(values),
+    onSuccess: (data) => {
+      NotificationUtil({
+        success: true,
+        title: "Success",
+        message: data?.data?.message,
+      });
+      form.reset();
+      setFiles([]);
+      setActive(2);
     },
     onError: (error) => {
       NotificationUtil({
@@ -163,13 +233,13 @@ const AddProduct = ({ onClose, onUpdate }) => {
   return (
     <div>
       <LoadingOverlay
-        visible={isCreating || isFetching}
+        visible={isCreating || isUpdating}
         zIndex={1000}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
 
       <Box p="md">
-        <Stepper active={active} onStepClick={setActive} breakpoint="sm">
+        <Stepper active={active} onStepClick={() => {}} breakpoint="sm">
           <Stepper.Step label="First step" description="Create product">
             <Grid>
               <Grid.Col
@@ -210,37 +280,43 @@ const AddProduct = ({ onClose, onUpdate }) => {
                         {...form.getInputProps("name")}
                       />
                     </div>
-                    <div>
-                      <TextInput
-                        placeholder="Ex. 9000"
-                        label="Product Price"
-                        size="xs"
-                        withAsterisk
-                        type="number"
-                        {...form.getInputProps("price")}
-                      />
-                    </div>
+                    <Grid>
+                      <Grid.Col xl={4} lg={4} md={6} sm={12} xs={12}>
+                        <div>
+                          <TextInput
+                            placeholder="Ex. 9000"
+                            label="Product Price"
+                            size="xs"
+                            withAsterisk
+                            type="number"
+                            {...form.getInputProps("price")}
+                          />
+                        </div>
+                      </Grid.Col>
+                      <Grid.Col xl={4} lg={4} md={6} sm={12} xs={12}>
+                        <div>
+                          <TextInput
+                            placeholder="Ex. 9000"
+                            label="Discount"
+                            size="xs"
+                            type="number"
+                            {...form.getInputProps("discount_amount")}
+                          />
+                        </div>
+                      </Grid.Col>
+                      <Grid.Col xl={4} lg={4} md={6} sm={12} xs={12}>
+                        <div>
+                          <TextInput
+                            placeholder="Ex. 100"
+                            label="Quantity"
+                            size="xs"
+                            type="number"
+                            {...form.getInputProps("quantity")}
+                          />
+                        </div>
+                      </Grid.Col>
+                    </Grid>
 
-                    <div>
-                      <Select
-                        size="xs"
-                        label="Select Category"
-                        placeholder="Select Category"
-                        dropdownPosition="bottom"
-                        withinPortal
-                        withAsterisk
-                        disabled={isFetching}
-                        data={
-                          categoryData?.data?.data.map((category) => {
-                            return {
-                              label: category.name,
-                              value: category._id,
-                            };
-                          }) || []
-                        }
-                        {...form.getInputProps("category")}
-                      />
-                    </div>
                     <div>
                       <p className="form-label">Description</p>
                       <ScrollArea style={{ height: "40vh" }}>
@@ -287,14 +363,14 @@ const AddProduct = ({ onClose, onUpdate }) => {
                     }}
                   >
                     <SimpleGrid
-                      cols={4}
+                      cols={3}
                       py="md"
                       spacing="lg"
                       breakpoints={[
-                        { maxWidth: "lg", cols: 2, spacing: "lg" },
-                        { maxWidth: "md", cols: 1, spacing: "lg" },
-                        { maxWidth: "sm", cols: 1, spacing: "lg" },
-                        { maxWidth: "xs", cols: 1, spacing: "lg" },
+                        { maxWidth: "lg", cols: 3, spacing: "lg" },
+                        { maxWidth: "md", cols: 2, spacing: "sm" },
+                        { maxWidth: "sm", cols: 2, spacing: "sm" },
+                        { maxWidth: "xs", cols: 1, spacing: "sm" },
                       ]}
                     >
                       {files.map((img, index) => {
@@ -304,8 +380,8 @@ const AddProduct = ({ onClose, onUpdate }) => {
                           <Image
                             src={image_as_base64}
                             radius="md"
-                            height={100}
-                            width={100}
+                            height={150}
+                            width={150}
                             key={index}
                             caption={caption}
                           />
@@ -321,8 +397,11 @@ const AddProduct = ({ onClose, onUpdate }) => {
               </Grid.Col>
             </Grid>
           </Stepper.Step>
-          <Stepper.Step label="Second step" description="Verify email">
-            Step 2 content: Select Variants
+          <Stepper.Step label="Select Variants" description="Set Variants">
+            <ProductVariants
+              handleEditSubmit={handleEditSubmit}
+              productDetails={newProductDetails}
+            />
           </Stepper.Step>
           <Stepper.Step label="Second step" description="Upload Completed">
             Step 2 content: Done
