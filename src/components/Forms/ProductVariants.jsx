@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   ColorPicker,
@@ -7,8 +8,11 @@ import {
   Group,
   Image,
   LoadingOverlay,
+  Modal,
   MultiSelect,
   Radio,
+  ScrollArea,
+  Select,
   Stack,
   Switch,
   Text,
@@ -23,7 +27,10 @@ import {
   fetchCategoriesPageless,
 } from "../../services/categories";
 import { fetchSubCategoriesPageless } from "../../services/subcategories";
-import { IconPlus, IconRefresh } from "@tabler/icons-react";
+import { IconPlus, IconRefresh, IconX } from "@tabler/icons-react";
+import AssignColor from "./AssignColor";
+import { NotificationUtil } from "../../utils/notifications";
+import AssignPower from "./AssignPower";
 
 const useStyles = createStyles(() => ({
   sectionBox: {
@@ -61,7 +68,7 @@ const useStyles = createStyles(() => ({
   },
 }));
 
-const ProductVariants = ({ productDetails, handleEditSubmit }) => {
+const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
   const { classes } = useStyles();
 
   const [isActive, setIsActive] = useState(false);
@@ -71,6 +78,52 @@ const ProductVariants = ({ productDetails, handleEditSubmit }) => {
   const [subCategories, setSubCategories] = useState([]);
   const [colors, setColors] = useState([]);
   const [singleColor, setSingleColor] = useState(null);
+  const [powers, setPowers] = useState([]);
+  const [singlePower, setSinglePower] = useState(null);
+
+  console.log(powers);
+
+  const [colorAddModal, setColorAddModal] = useState(false);
+  const [powerAddModal, setPowerAddModal] = useState(false);
+
+  const saveColor = (values) => {
+    const checkColor = colors.filter((c) => c.color_name == values?.color_name);
+
+    if (isArrayAndHasContent(checkColor)) {
+      NotificationUtil({
+        success: false,
+        title: "Color name already exists",
+        message: "Color name already exists",
+      });
+    } else {
+      let updatedValue = {
+        ...values,
+        add_amount: values.add_amount ? parseInt(values.add_amount) : 0,
+        color_quantity: values.color_quantity
+          ? parseInt(values.color_quantity)
+          : 0,
+      };
+      colors.push(updatedValue);
+    }
+  };
+
+  const savePower = (values) => {
+    const checkPower = powers.filter((p) => p.power_name == values?.power_name);
+
+    if (isArrayAndHasContent(checkPower)) {
+      NotificationUtil({
+        success: false,
+        title: "Power already exists",
+        message: "Power name already exists",
+      });
+    } else {
+      let updatedValue = {
+        ...values,
+        add_amount: values.add_amount ? parseInt(values.add_amount) : 0,
+      };
+      powers.push(updatedValue);
+    }
+  };
 
   //fetching patient only
   const { data: shapeData, isLoading: shapeDataLoading } = useQuery({
@@ -104,6 +157,59 @@ const ProductVariants = ({ productDetails, handleEditSubmit }) => {
         zIndex={1000}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
+
+      {/* color modal */}
+      <Modal
+        opened={colorAddModal && singleColor}
+        closeOnClickOutside={false}
+        onClose={() => {
+          setColorAddModal(false);
+          setSingleColor(null);
+        }}
+        title={<Text fw="600">Assign Color</Text>}
+        centered
+        styles={() => ({
+          title: {
+            fontSize: "21px",
+            fontWeight: "bold",
+          },
+        })}
+        size="md"
+      >
+        <AssignColor
+          onClose={() => {
+            setColorAddModal(false);
+          }}
+          colorValue={singleColor}
+          saveColor={saveColor}
+          productDetails={productDetails}
+        />
+      </Modal>
+
+      {/* power modal */}
+      <Modal
+        opened={powerAddModal && singlePower}
+        closeOnClickOutside={false}
+        onClose={() => setPowerAddModal(false)}
+        title={<Text fw="600">Assign Power</Text>}
+        centered
+        styles={() => ({
+          title: {
+            fontSize: "21px",
+            fontWeight: "bold",
+          },
+        })}
+        size="md"
+      >
+        <AssignPower
+          onClose={() => {
+            setPowerAddModal(false);
+            setSinglePower(null);
+          }}
+          powerValue={singlePower}
+          savePower={savePower}
+        />
+      </Modal>
 
       <Flex direction="column" gap={20}>
         <Flex justify="space-between" align="center">
@@ -225,12 +331,21 @@ const ProductVariants = ({ productDetails, handleEditSubmit }) => {
                     size="xs"
                     disabled={!singleColor}
                     leftIcon={<IconPlus />}
+                    onClick={() => setColorAddModal(true)}
                   >
                     Add
                   </Button>
                   <Button
                     size="xs"
                     onClick={() => setSingleColor(null)}
+                    leftIcon={<IconX />}
+                    color="orange"
+                  >
+                    Delect
+                  </Button>
+                  <Button
+                    size="xs"
+                    onClick={() => setColors([])}
                     leftIcon={<IconRefresh />}
                     color="orange"
                   >
@@ -239,11 +354,37 @@ const ProductVariants = ({ productDetails, handleEditSubmit }) => {
                 </Flex>
               </Flex>
 
-              <Stack align="center">
+              <Stack align="center" py="md">
                 <Flex gap={20}>
-                  <Flex direction="column">
-                    <div>color</div>
-                  </Flex>
+                  {isArrayAndHasContent(colors) ? (
+                    <ScrollArea mah="150px">
+                      <Flex direction="column">
+                        {colors.map((color, index) => {
+                          return (
+                            <div key={index}>
+                              <Flex
+                                gap={10}
+                                justify="flex-start"
+                                align="center"
+                              >
+                                <div
+                                  style={{
+                                    backgroundColor: color?.color_value,
+                                    height: "10px",
+                                    width: "10px",
+                                    borderRadius: "50%",
+                                  }}
+                                ></div>
+                                <div>{color?.color_name}</div>
+                              </Flex>
+                            </div>
+                          );
+                        })}
+                      </Flex>
+                    </ScrollArea>
+                  ) : (
+                    <></>
+                  )}
                   <ColorPicker
                     format="rgba"
                     value={singleColor}
@@ -256,7 +397,70 @@ const ProductVariants = ({ productDetails, handleEditSubmit }) => {
           </Grid.Col>
 
           <Grid.Col lg={6} md={6} sm={12} xs={12}>
-            <Box className={classes.sectionBox}></Box>
+            <Box className={classes.sectionBox}>
+              <Flex justify="space-between" align="center">
+                <Text fw={600}>Power Section</Text>
+                <Flex gap={5}>
+                  <Button
+                    size="xs"
+                    disabled={!singlePower}
+                    leftIcon={<IconPlus />}
+                    onClick={() => setPowerAddModal(true)}
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    size="xs"
+                    onClick={() => setSinglePower(null)}
+                    leftIcon={<IconX />}
+                    color="orange"
+                  >
+                    Delect
+                  </Button>
+                  <Button
+                    size="xs"
+                    onClick={() => setPowers([])}
+                    leftIcon={<IconRefresh />}
+                    color="orange"
+                  >
+                    Reset
+                  </Button>
+                </Flex>
+              </Flex>
+
+              <Select
+                value={singlePower}
+                onChange={setSinglePower}
+                data={[
+                  "Upto Regular Power",
+                  "Support High Power",
+                  "Support Very High Power",
+                  "Support All Powers",
+                ]}
+                label="Select Power"
+                searchable
+                nothingFound="Nothing found"
+              />
+
+              {isArrayAndHasContent(powers) ? (
+                <>
+                  <Text py="xs" fw={600}>
+                    Selected Powers are
+                  </Text>
+                  <Flex>
+                    {powers.map((p, index) => {
+                      return (
+                        <Badge key={index}>
+                          {p?.power_name}( +{p?.add_amount} BDT)
+                        </Badge>
+                      );
+                    })}
+                  </Flex>
+                </>
+              ) : (
+                <></>
+              )}
+            </Box>
           </Grid.Col>
         </Grid>
       </Flex>
