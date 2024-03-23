@@ -27,7 +27,13 @@ import {
   fetchCategoriesPageless,
 } from "../../services/categories";
 import { fetchSubCategoriesPageless } from "../../services/subcategories";
-import { IconPlus, IconRefresh, IconX } from "@tabler/icons-react";
+import {
+  IconArrowRight,
+  IconFile,
+  IconPlus,
+  IconRefresh,
+  IconX,
+} from "@tabler/icons-react";
 import AssignColor from "./AssignColor";
 import { NotificationUtil } from "../../utils/notifications";
 import AssignPower from "./AssignPower";
@@ -80,8 +86,6 @@ const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
   const [singleColor, setSingleColor] = useState(null);
   const [powers, setPowers] = useState([]);
   const [singlePower, setSinglePower] = useState(null);
-
-  console.log(powers);
 
   const [colorAddModal, setColorAddModal] = useState(false);
   const [powerAddModal, setPowerAddModal] = useState(false);
@@ -151,7 +155,7 @@ const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
   });
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <LoadingOverlay
         visible={shapeDataLoading || categoriesLoading || subCategoriesLoading}
         zIndex={1000}
@@ -463,6 +467,33 @@ const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
             </Box>
           </Grid.Col>
         </Grid>
+        <div style={{ position: "absolute", bottom: "0", right: "0" }}>
+          <Flex justify="flex-end" align="center">
+            <Flex gap={5}>
+              <Button size="md" leftIcon={<IconFile />} onClick={() => {}}>
+                Save
+              </Button>
+
+              <Button
+                size="md"
+                onClick={() => {}}
+                leftIcon={<IconRefresh />}
+                color="red"
+              >
+                Reset All
+              </Button>
+
+              <Button
+                color="green"
+                size="md"
+                leftIcon={<IconArrowRight />}
+                onClick={() => {}}
+              >
+                Skip
+              </Button>
+            </Flex>
+          </Flex>
+        </div>
       </Flex>
     </div>
   );
