@@ -70,7 +70,7 @@ const AddProduct = ({ onClose, onUpdate }) => {
   const descriptionRef = useRef(null);
 
   //stepper steps
-  const [active, setActive] = useState(1);
+  const [active, setActive] = useState(0);
   const nextStep = () =>
     setActive((current) => (current < 3 ? current + 1 : current));
   const prevStep = () =>
@@ -185,8 +185,8 @@ const AddProduct = ({ onClose, onUpdate }) => {
     },
   });
 
-  const handleEditSubmit = () => {
-    ConfirmModalForUpdate({});
+  const handleEditSubmit = (values) => {
+    ConfirmModalForUpdate(values);
   };
 
   const ConfirmModalForUpdate = (values) => {
@@ -210,7 +210,8 @@ const AddProduct = ({ onClose, onUpdate }) => {
   };
 
   const { mutate: updateMutate, isLoading: isUpdating } = useMutation({
-    mutationFn: async (values) => await updateProductJson(values),
+    mutationFn: async (values) =>
+      await updateProductJson(values, newProductDetails?._id),
     onSuccess: (data) => {
       NotificationUtil({
         success: true,
@@ -401,10 +402,13 @@ const AddProduct = ({ onClose, onUpdate }) => {
             <ProductVariants
               handleEditSubmit={handleEditSubmit}
               productDetails={newProductDetails}
+              nextStep={nextStep}
             />
           </Stepper.Step>
           <Stepper.Step label="Second step" description="Upload Completed">
-            Step 2 content: Done
+            <Button size="lg" onClick={() => onUpdate()}>
+              Go Back
+            </Button>
           </Stepper.Step>
         </Stepper>
       </Box>

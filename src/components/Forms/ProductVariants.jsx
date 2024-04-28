@@ -74,7 +74,7 @@ const useStyles = createStyles(() => ({
   },
 }));
 
-const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
+const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
   const { classes } = useStyles();
 
   const [isActive, setIsActive] = useState(false);
@@ -89,6 +89,20 @@ const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
 
   const [colorAddModal, setColorAddModal] = useState(false);
   const [powerAddModal, setPowerAddModal] = useState(false);
+
+  const saveData = () => {
+    const obj = {
+      isActive,
+      isFeaturd,
+      categories,
+      subCategories,
+      colors,
+      supportedPowers: powers,
+      shape,
+    };
+
+    handleEditSubmit(obj);
+  };
 
   const saveColor = (values) => {
     const checkColor = colors.filter((c) => c.color_name == values?.color_name);
@@ -345,7 +359,7 @@ const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
                     leftIcon={<IconX />}
                     color="orange"
                   >
-                    Delect
+                    Deselect
                   </Button>
                   <Button
                     size="xs"
@@ -380,6 +394,9 @@ const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
                                   }}
                                 ></div>
                                 <div>{color?.color_name}</div>
+                                {color?.add_amount ? (
+                                  <Badge>BDT {color?.add_amount}+</Badge>
+                                ) : null}
                               </Flex>
                             </div>
                           );
@@ -419,7 +436,7 @@ const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
                     leftIcon={<IconX />}
                     color="orange"
                   >
-                    Delect
+                    Deselect
                   </Button>
                   <Button
                     size="xs"
@@ -470,7 +487,11 @@ const ProductVariants = ({ productDetails, handleEditSubmit, refetch }) => {
         <div style={{ position: "absolute", bottom: "0", right: "0" }}>
           <Flex justify="flex-end" align="center">
             <Flex gap={5}>
-              <Button size="md" leftIcon={<IconFile />} onClick={() => {}}>
+              <Button
+                size="md"
+                leftIcon={<IconFile />}
+                onClick={() => saveData()}
+              >
                 Save
               </Button>
 
