@@ -21,6 +21,7 @@ import {
   Center,
   Box,
   createStyles,
+  Stack,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { NotificationUtil } from "../../utils/notifications";
@@ -32,6 +33,8 @@ import { addNewProduct, updateProductJson } from "../../services/products";
 import NoFileSelectedBox from "../../pages/global/NoFileSelectedBox";
 import { fetchShapes } from "../../services/shape";
 import ProductVariants from "./ProductVariants";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
+import COLORS from "../../constants/colors";
 
 const useStyles = createStyles(() => ({
   shapeSelectBox: {
@@ -405,10 +408,21 @@ const AddProduct = ({ onClose, onUpdate }) => {
               nextStep={nextStep}
             />
           </Stepper.Step>
-          <Stepper.Step label="Second step" description="Upload Completed">
-            <Button size="lg" onClick={() => onUpdate()}>
-              Go Back
-            </Button>
+          <Stepper.Step
+            label="Product Upload Done"
+            description="Upload Completed"
+          >
+            <Stack mih="70vh" justify="center" align="center">
+              <Flex direction="column" gap={20} justify="center" align="center">
+                <IconCircleCheckFilled size="5em" color={"green"} />
+                <Text size="xl">Product Uploaded Successfully!</Text>
+                <Flex>
+                  <Button size="lg" onClick={() => onUpdate()}>
+                    Go Back
+                  </Button>
+                </Flex>
+              </Flex>
+            </Stack>
           </Stepper.Step>
         </Stepper>
       </Box>
