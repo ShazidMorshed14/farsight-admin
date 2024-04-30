@@ -119,10 +119,10 @@ const ProductTable = ({ data, handleSelectItem, setProductDetailsModal }) => {
             maxWidth: "500px",
           }}
         >
-          {isArrayAndHasContent(product?.subcategories) ? (
+          {isArrayAndHasContent(product?.subCategories) ? (
             <>
               <Flex gap={10} wrap="wrap">
-                {product?.subcategories.map((subcat, index) => {
+                {product?.subCategories.map((subcat, index) => {
                   return <Badge key={index}>{subcat?.name}</Badge>;
                 })}
               </Flex>
