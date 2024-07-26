@@ -30,7 +30,17 @@ const AssignColor = ({ colorValue, productDetails, saveColor, onClose }) => {
     <div>
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Flex direction="column" justify="space-between" gap={10}>
-          <Text>Add color variant of : {colorValue}</Text>
+          <Flex align="center" gap={10}>
+            <Text>Add color variant of :</Text>
+            <div
+              style={{
+                height: "20px",
+                width: "20px",
+                backgroundColor: colorValue,
+                border: "1px solid white",
+              }}
+            ></div>
+          </Flex>
           <div>
             <TextInput
               placeholder="Ex. 10 "

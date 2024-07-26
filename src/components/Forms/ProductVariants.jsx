@@ -34,6 +34,7 @@ import {
   IconFile,
   IconPlus,
   IconRefresh,
+  IconTrashFilled,
   IconX,
 } from "@tabler/icons-react";
 import AssignColor from "./AssignColor";
@@ -81,7 +82,7 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
   console.log(productDetails);
   const { classes } = useStyles();
 
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
   const [isFeaturd, setIsFeatured] = useState(false);
   const [shape, setShape] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -94,10 +95,12 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
   const [colorAddModal, setColorAddModal] = useState(false);
   const [powerAddModal, setPowerAddModal] = useState(false);
 
+  console.log(isFeaturd);
+
   const saveData = () => {
     const obj = {
-      isActive,
-      isFeaturd,
+      status: isActive ? "active" : "deactive",
+      isFeatured: isFeaturd,
       categories,
       subCategories,
       colors,
@@ -375,6 +378,7 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
                     onClick={() => setSingleColor(null)}
                     leftIcon={<IconX />}
                     color="orange"
+                    disabled={!singleColor}
                   >
                     Deselect
                   </Button>
@@ -400,8 +404,8 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
                           cols={3}
                           spacing="lg"
                           breakpoints={[
-                            { maxWidth: "lg", cols: 3, spacing: "lg" },
-                            { maxWidth: "md", cols: 2, spacing: "sm" },
+                            { maxWidth: "lg", cols: 6, spacing: "lg" },
+                            { maxWidth: "md", cols: 4, spacing: "sm" },
                             { maxWidth: "sm", cols: 2, spacing: "sm" },
                             { maxWidth: "xs", cols: 1, spacing: "sm" },
                           ]}
@@ -445,6 +449,58 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
                 </Flex>
                 <Text>{singleColor}</Text>
               </Stack>
+
+              {isArrayAndHasContent(colors) ? (
+                <Flex direction="column" gap={20} align="flex-start">
+                  <Text fw={600}>Selected Colors</Text>
+                  <SimpleGrid
+                    cols={3}
+                    spacing="lg"
+                    breakpoints={[
+                      { maxWidth: "lg", cols: 4, spacing: "md" },
+                      { maxWidth: "md", cols: 4, spacing: "sm" },
+                      { maxWidth: "sm", cols: 2, spacing: "sm" },
+                      { maxWidth: "xs", cols: 1, spacing: "sm" },
+                    ]}
+                  >
+                    <Flex gap={10}>
+                      {colors?.map((color, index) => {
+                        return (
+                          <Flex
+                            key={index}
+                            style={{
+                              border: "1px solid white",
+                              cursor: "pointer",
+                            }}
+                            p="xs"
+                            gap={10}
+                            align="center"
+                          >
+                            <IconTrashFilled
+                              size="1em"
+                              onClick={() => {
+                                let updatedColors = colors.filter(
+                                  (c) => c.color !== color.color
+                                );
+                                setColors(updatedColors);
+                              }}
+                            />
+                            <div
+                              style={{
+                                backgroundColor: color?.color,
+                                height: "20px",
+                                width: "20px",
+                                //borderRadius: "50%",
+                              }}
+                            ></div>
+                            <Text fw={600}> +{color?.add_amount}</Text>
+                          </Flex>
+                        );
+                      })}
+                    </Flex>
+                  </SimpleGrid>
+                </Flex>
+              ) : null}
             </Box>
           </Grid.Col>
 
@@ -453,22 +509,6 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
               <Flex justify="space-between" align="center">
                 <Text fw={600}>Power Section</Text>
                 <Flex gap={5}>
-                  <Button
-                    size="xs"
-                    disabled={!singlePower}
-                    leftIcon={<IconPlus />}
-                    onClick={() => setPowerAddModal(true)}
-                  >
-                    Add
-                  </Button>
-                  <Button
-                    size="xs"
-                    onClick={() => setSinglePower(null)}
-                    leftIcon={<IconX />}
-                    color="orange"
-                  >
-                    Deselect
-                  </Button>
                   <Button
                     size="xs"
                     onClick={() => setPowers([])}
@@ -480,9 +520,9 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
                 </Flex>
               </Flex>
 
-              <Select
-                value={singlePower}
-                onChange={setSinglePower}
+              <MultiSelect
+                value={powers}
+                onChange={setPowers}
                 data={[
                   "Upto Regular Power",
                   "Support High Power",
@@ -493,25 +533,6 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
                 searchable
                 nothingFound="Nothing found"
               />
-
-              {isArrayAndHasContent(powers) ? (
-                <>
-                  <Text py="xs" fw={600}>
-                    Selected Powers are
-                  </Text>
-                  <Flex>
-                    {powers.map((p, index) => {
-                      return (
-                        <Badge key={index}>
-                          {p?.power_name}( +{p?.add_amount} BDT)
-                        </Badge>
-                      );
-                    })}
-                  </Flex>
-                </>
-              ) : (
-                <></>
-              )}
             </Box>
           </Grid.Col>
         </Grid>
