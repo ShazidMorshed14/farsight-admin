@@ -41,6 +41,7 @@ import AssignColor from "./AssignColor";
 import { NotificationUtil } from "../../utils/notifications";
 import AssignPower from "./AssignPower";
 import { fetchColors } from "../../services/color";
+import { fetchBrands } from "../../services/brand";
 
 const useStyles = createStyles(() => ({
   sectionBox: {
@@ -95,17 +96,20 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
   const [colorAddModal, setColorAddModal] = useState(false);
   const [powerAddModal, setPowerAddModal] = useState(false);
 
+  const [brand, setBrand] = useState(null);
+
   console.log(isFeaturd);
 
   const saveData = () => {
     const obj = {
       status: isActive ? "active" : "deactive",
-      isFeatured: isFeaturd,
+      isFeatured: isFeaturd ? true : false,
       categories,
       subCategories,
       colors,
       supportedPowers: powers,
       shape,
+      brand,
     };
 
     handleEditSubmit(obj);
@@ -170,6 +174,17 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
 
   console.log(colorData);
 
+  //fetching brands
+  const { data: brandData, isLoading: brandDataLoading } = useQuery({
+    queryKey: ["fetch-brands"],
+    queryFn: fetchBrands,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+    retry: false,
+  });
+
+  console.log(brandData);
+
   const { data: categoryData, isLoading: categoriesLoading } = useQuery({
     queryKey: ["fetch-categories-pageless"],
     queryFn: fetchCategoriesPageless,
@@ -218,7 +233,7 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
           onClose={() => {
             setColorAddModal(false);
           }}
-          colorValue={singleColor}
+          colorDetails={singleColor}
           saveColor={saveColor}
           productDetails={productDetails}
         />
@@ -327,6 +342,19 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
           <Grid.Col lg={6} md={6} sm={12} xs={12}>
             <Box className={classes.sectionBox}>
               <Flex direction="column" gap={20}>
+                <Select
+                  value={brand}
+                  onChange={setBrand}
+                  data={
+                    brandData?.data?.data?.map((b) => {
+                      return { label: b?.name, value: b?._id };
+                    }) || []
+                  }
+                  label="Select Brand"
+                  placeholder="Pick your brand"
+                  searchable
+                  nothingFound="Nothing found"
+                />
                 <MultiSelect
                   value={categories}
                   onChange={setCategories}
@@ -417,7 +445,7 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
                                   key={index}
                                   style={{
                                     border:
-                                      singleColor == color?.value
+                                      singleColor?.value == color?.value
                                         ? "1px solid yellow"
                                         : "1px solid white",
                                     cursor: "pointer",
@@ -425,7 +453,7 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
                                   p="xs"
                                   gap={10}
                                   align="center"
-                                  onClick={() => setSingleColor(color?.value)}
+                                  onClick={() => setSingleColor(color)}
                                 >
                                   <div
                                     style={{
@@ -447,7 +475,7 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
                     </>
                   )}
                 </Flex>
-                <Text>{singleColor}</Text>
+                <Text>{singleColor?.name}</Text>
               </Stack>
 
               {isArrayAndHasContent(colors) ? (
@@ -485,15 +513,9 @@ const ProductVariants = ({ productDetails, handleEditSubmit, nextStep }) => {
                                 setColors(updatedColors);
                               }}
                             />
-                            <div
-                              style={{
-                                backgroundColor: color?.color,
-                                height: "20px",
-                                width: "20px",
-                                //borderRadius: "50%",
-                              }}
-                            ></div>
-                            <Text fw={600}> +{color?.add_amount}</Text>
+
+                            <Text fw={600}>A: +{color?.add_amount}</Text>
+                            <Text fw={600}>Q: +{color?.add_amount}</Text>
                           </Flex>
                         );
                       })}

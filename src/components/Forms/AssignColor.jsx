@@ -2,12 +2,13 @@ import { Button, Flex, Text, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import React from "react";
 
-const AssignColor = ({ colorValue, productDetails, saveColor, onClose }) => {
+const AssignColor = ({ colorDetails, productDetails, saveColor, onClose }) => {
+  console.log("colorDetails", colorDetails);
   const form = useForm({
     initialValues: {
       add_amount: 0,
       color_quantity: 1,
-      color: colorValue ? colorValue : "",
+      color: colorDetails?._id ? colorDetails._id : "",
     },
 
     validate: {
@@ -31,15 +32,7 @@ const AssignColor = ({ colorValue, productDetails, saveColor, onClose }) => {
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Flex direction="column" justify="space-between" gap={10}>
           <Flex align="center" gap={10}>
-            <Text>Add color variant of :</Text>
-            <div
-              style={{
-                height: "20px",
-                width: "20px",
-                backgroundColor: colorValue,
-                border: "1px solid white",
-              }}
-            ></div>
+            <Text>Add color variant of : {colorDetails?.name} </Text>
           </Flex>
           <div>
             <TextInput
@@ -54,7 +47,7 @@ const AssignColor = ({ colorValue, productDetails, saveColor, onClose }) => {
           <div>
             <TextInput
               disabled={true}
-              placeholder="Ex. #FFFFFF "
+              placeholder="Ex. Color Id Here"
               label="Color Value"
               size="xs"
               withAsterisk
