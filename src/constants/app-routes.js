@@ -1,11 +1,12 @@
-import CategoryManagement from "../pages/auth/CategoryManagement";
-import Dashboard from "../pages/auth/Dashboard";
-import OptionManagement from "../pages/auth/OptionManagement";
-import OrderManagement from "../pages/auth/OrderManagement";
-import ProductManagement from "../pages/auth/ProductManagement";
-import SignIn from "../pages/auth/Signin";
-import SubCategoryManagement from "../pages/auth/SubCategoryManagement";
-import UserManagement from "../pages/auth/UserManagement";
+import CategoryManagement from "../pages/CategoryManagement";
+import Dashboard from "../pages/Dashboard";
+import OptionManagement from "../pages/OptionManagement";
+import OrderDetails from "../pages/OrderDetails";
+import OrderManagement from "../pages/OrderManagement";
+import ProductManagement from "../pages/ProductManagement";
+import SignIn from "../pages/Signin";
+import SubCategoryManagement from "../pages/SubCategoryManagement";
+import UserManagement from "../pages/UserManagement";
 import * as urls from "./app-urls";
 
 const routes = [
@@ -54,6 +55,12 @@ const routes = [
   {
     path: urls.OPTIONS,
     Element: OptionManagement,
+    isIndexUrl: false,
+    isProtected: true,
+  },
+  {
+    path: urls.ORDER_DETAILS,
+    Element: OrderDetails,
     isIndexUrl: false,
     isProtected: true,
   },

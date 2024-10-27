@@ -17,10 +17,10 @@ import React, { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { SignInApi } from "../../services/auth";
-import { authActions } from "../../store/reducers/authReducer";
-import { NotificationUtil } from "../../utils/notifications";
-import { SignInSchema } from "../../validators/SignIn";
+import { SignInApi } from "../services/auth";
+import { authActions } from "../store/reducers/authReducer";
+import { NotificationUtil } from "../utils/notifications";
+import { SignInSchema } from "../validators/SignIn";
 
 const useStyles = createStyles(() => ({
   wrapper: {

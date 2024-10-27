@@ -1,12 +1,12 @@
 import { Button, Flex, Loader, Modal, Stack, Text } from "@mantine/core";
 import { IconDatabaseExport, IconPlus } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
-import CommonHeader from "../../components/Global/CommonHeader";
-import { fetchProducts } from "../../services/products";
-import ServerErrorBox from "../../components/Global/ServerErrorBox";
+import CommonHeader from "../components/Global/CommonHeader";
+import { fetchProducts } from "../services/products";
+import ServerErrorBox from "../components/Global/ServerErrorBox";
 import { useQuery } from "@tanstack/react-query";
-import ProductTable from "../../components/Tables/ProductTable";
-import AddProduct from "../../components/Forms/AddProduct";
+import ProductTable from "../components/Tables/ProductTable";
+import AddProduct from "../components/Forms/AddProduct";
 
 const ProductManagement = () => {
   useEffect(() => {

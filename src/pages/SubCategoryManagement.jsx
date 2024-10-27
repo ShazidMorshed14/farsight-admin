@@ -13,27 +13,27 @@ import { openConfirmModal } from "@mantine/modals";
 import { IconPlus, IconRefresh } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import AddCategory from "../../components/Forms/AddCategory";
-import EditCategory from "../../components/Forms/EditCategory";
-import CommonHeader from "../../components/Global/CommonHeader";
-import ServerErrorBox from "../../components/Global/ServerErrorBox";
-import CategoryTable from "../../components/Tables/CategoryTable";
-import COLORS from "../../constants/colors";
+import AddCategory from "../components/Forms/AddCategory";
+import EditCategory from "../components/Forms/EditCategory";
+import CommonHeader from "../components/Global/CommonHeader";
+import ServerErrorBox from "../components/Global/ServerErrorBox";
+import CategoryTable from "../components/Tables/CategoryTable";
+import COLORS from "../constants/colors";
 import {
   deleteCategory,
   fetchCategoriesPageless,
-} from "../../services/categories";
-import { NotificationUtil } from "../../utils/notifications";
-import SubCategoryTable from "../../components/Tables/SubCategoryTable";
+} from "../services/categories";
+import { NotificationUtil } from "../utils/notifications";
+import SubCategoryTable from "../components/Tables/SubCategoryTable";
 import {
   deleteSubCategory,
   fetchSubCategoriesPageless,
   removeCategoryFromSubCategory,
-} from "../../services/subcategories";
-import SearchInput from "../../components/Global/SearchInput";
-import AddSubCategory from "../../components/Forms/AddSubCategory";
-import EditSubCategory from "../../components/Forms/EditSubCategory";
-import { isArrayAndHasContent } from "../../utils/utils";
+} from "../services/subcategories";
+import SearchInput from "../components/Global/SearchInput";
+import AddSubCategory from "../components/Forms/AddSubCategory";
+import EditSubCategory from "../components/Forms/EditSubCategory";
+import { isArrayAndHasContent } from "../utils/utils";
 
 const SubCategoryManagement = () => {
   useEffect(() => {

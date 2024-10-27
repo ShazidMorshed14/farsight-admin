@@ -3,17 +3,17 @@ import { openConfirmModal } from "@mantine/modals";
 import { IconPlus } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import AddCategory from "../../components/Forms/AddCategory";
-import EditCategory from "../../components/Forms/EditCategory";
-import CommonHeader from "../../components/Global/CommonHeader";
-import ServerErrorBox from "../../components/Global/ServerErrorBox";
-import CategoryTable from "../../components/Tables/CategoryTable";
-import COLORS from "../../constants/colors";
+import AddCategory from "../components/Forms/AddCategory";
+import EditCategory from "../components/Forms/EditCategory";
+import CommonHeader from "../components/Global/CommonHeader";
+import ServerErrorBox from "../components/Global/ServerErrorBox";
+import CategoryTable from "../components/Tables/CategoryTable";
+import COLORS from "../constants/colors";
 import {
   deleteCategory,
   fetchCategoriesPageless,
-} from "../../services/categories";
-import { NotificationUtil } from "../../utils/notifications";
+} from "../services/categories";
+import { NotificationUtil } from "../utils/notifications";
 
 const CategoryManagement = () => {
   useEffect(() => {

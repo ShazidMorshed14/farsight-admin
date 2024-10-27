@@ -4,5 +4,6 @@ export const CATEGORIES = "/categories";
 export const SUBCATEGORIES = "/sub-categories";
 export const PRODUCTS = "/products";
 export const ORDERS = "/orders";
+export const ORDER_DETAILS = "/orders/:orderNo";
 export const USERS = "/users";
 export const OPTIONS = "/options";

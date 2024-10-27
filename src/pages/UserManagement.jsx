@@ -11,18 +11,18 @@ import {
   Text,
   Tooltip,
 } from "@mantine/core";
-import COLORS from "../../constants/colors";
+import COLORS from "../constants/colors";
 import React, { useEffect, useState } from "react";
 import { IconDatabase, IconPlus, IconRefresh } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUserList } from "../../services/users";
-import ServerErrorBox from "../../components/Global/ServerErrorBox";
-import SearchInput from "../../components/Global/SearchInput";
-import UserTable from "../../components/Tables/UserTable";
-import ShowItems from "../../components/Global/ShowItems";
-import UserDetails from "../../components/Forms/UserDetails";
-import EditUser from "../../components/Forms/EditUser";
-import AddUser from "../../components/Forms/AddUser";
+import { fetchUserList } from "../services/users";
+import ServerErrorBox from "../components/Global/ServerErrorBox";
+import SearchInput from "../components/Global/SearchInput";
+import UserTable from "../components/Tables/UserTable";
+import ShowItems from "../components/Global/ShowItems";
+import UserDetails from "../components/Forms/UserDetails";
+import EditUser from "../components/Forms/EditUser";
+import AddUser from "../components/Forms/AddUser";
 
 const UserManagement = () => {
   useEffect(() => {

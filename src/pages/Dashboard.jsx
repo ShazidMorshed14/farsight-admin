@@ -1,6 +1,6 @@
 import { Flex } from "@mantine/core";
 import React, { useEffect } from "react";
-import CommonHeader from "../../components/Global/CommonHeader";
+import CommonHeader from "../components/Global/CommonHeader";
 
 const Dashboard = () => {
   useEffect(() => {
