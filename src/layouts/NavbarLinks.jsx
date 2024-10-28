@@ -1,4 +1,4 @@
-import { Stack } from "@mantine/core";
+import { ScrollArea, Stack } from "@mantine/core";
 import React from "react";
 import useStyles from "../styles/nav-styles";
 import NavbarLink from "./NavbarLink";
@@ -30,7 +30,7 @@ const NavbarLinks = () => {
     return appUser?.userWeight >= navItem.accessWeight;
   };
   return (
-    <Stack justify="center" align="center" spacing="lg">
+    <ScrollArea style={{ height: "60vh" }}>
       <div className={classes.linksInner}>
         {/* {navItems.map(
           (item, index) =>
@@ -69,7 +69,7 @@ const NavbarLinks = () => {
           </div>
         ))}
       </div>
-    </Stack>
+    </ScrollArea>
   );
 };
 

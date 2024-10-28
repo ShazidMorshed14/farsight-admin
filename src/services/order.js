@@ -7,7 +7,7 @@ export const fetchOrderList = async (context) => {
       pageSize: context.queryKey[2],
       searchKey: context.queryKey[3],
       user_id: context.queryKey[4],
-      status: context.queryKey[5],
+      order_status: context.queryKey[5],
       start_date: context.queryKey[6],
       end_date: context.queryKey[7],
     },
@@ -18,5 +18,10 @@ export const fetchOrderList = async (context) => {
 
 export const fetchOrderDetails = async (context) => {
   const response = await axios().get(`/admin/order/${context.queryKey[1]}`);
+  return response;
+};
+
+export const editOrder = async (formData, id) => {
+  const response = await axios().put(`/admin/order/${id}`, formData);
   return response;
 };

@@ -21,6 +21,7 @@ import { IconRefresh } from "@tabler/icons-react";
 import OrderTable from "../components/Tables/OrderTable";
 import ShowItems from "../components/Global/ShowItems";
 import { useNavigate } from "react-router-dom";
+import { orderStatusOptions } from "../utils/dropdowns/order";
 
 const OrderManagement = () => {
   const navigate = useNavigate();
@@ -132,10 +133,7 @@ const OrderManagement = () => {
               setStatus(value);
             }}
             placeholder="Status"
-            data={[
-              { label: "Active", value: "active" },
-              { label: "Deactive", value: "deactive" },
-            ]}
+            data={orderStatusOptions ?? []}
           />
 
           {/* <Select

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchOrderDetails } from "../services/order";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Flex,
@@ -13,6 +13,8 @@ import {
   Box,
   Grid,
   Group,
+  Stepper,
+  Modal,
 } from "@mantine/core";
 import ServerErrorBox from "../components/Global/ServerErrorBox";
 import COLORS from "../constants/colors";
@@ -25,12 +27,36 @@ import {
   IconShoppingCart,
   IconTag,
   IconCreditCard,
+  IconUserCheck,
+  IconMailOpened,
+  IconCircleCheck,
+  IconLoader,
+  IconHourglass,
+  IconBox,
+  IconTruckDelivery,
+  IconCheckbox,
+  IconExchange,
+  IconExchangeOff,
+  IconEyeCancel,
+  IconX,
+  IconTruckLoading,
 } from "@tabler/icons-react";
+import { IconShieldCheck } from "@tabler/icons-react";
+import ChangeOrderStatus from "../components/Forms/ChangeOrderStatusModal";
+import OrderLifeCycle from "../components/Pages/OrderDetails/OrderLifeCycle";
 
 const OrderDetails = () => {
+  const queryClient = useQueryClient();
   const { orderNo } = useParams();
 
-  const { data, isLoading, error } = useQuery({
+  // Stepper state
+  const [active, setActive] = useState(7);
+
+  //modals states
+  const [statusChangeModal, setStatusChangeModal] = useState(false);
+
+  // Fetching data with useQuery
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["order-details", orderNo],
     queryFn: fetchOrderDetails,
     refetchOnWindowFocus: false,
@@ -38,16 +64,83 @@ const OrderDetails = () => {
     retry: false,
   });
 
-  if (isLoading) return <LoaderContent />;
+  // Get order details only if data is available
+  const orderDetails = data?.data?.data;
 
-  if (error) return <ServerErrorBox apiError={true} />;
+  useEffect(() => {
+    if (orderDetails) {
+      // Set the active step in the Stepper based on order status
+      switch (orderDetails.order_status) {
+        case "PENDING":
+          setActive(1);
+          break;
+        case "CONFIRMED":
+          setActive(2);
+          break;
+        case "PACKED":
+          setActive(3);
+          break;
+        case "SHIPPED":
+          setActive(4);
+          break;
+        case "DELIVERED":
+          setActive(5);
+          break;
+        case "RETURNED":
+          setActive(6);
+          break;
+        case "CANCELLED":
+          setActive(7);
+          break;
+        default:
+          setActive(0);
+      }
+    }
+  }, [orderDetails]);
 
-  const { data: orderDetails } = data.data;
+  // Conditional rendering for loader, error, or order details
+  if (isLoading) {
+    return <LoaderContent />;
+  }
 
-  if (!orderDetails) return <NoOrderContent />;
+  if (error) {
+    return <ServerErrorBox apiError={true} />;
+  }
+
+  if (!orderDetails) {
+    return <NoOrderContent />;
+  }
 
   return (
     <div>
+      <Modal
+        opened={statusChangeModal}
+        onClose={() => setStatusChangeModal(false)}
+        title={<Text fw="600">Change Status</Text>}
+        centered
+        styles={() => ({
+          title: {
+            fontSize: "24px",
+            fontWeight: "bold",
+          },
+        })}
+        size="lg"
+      >
+        <ChangeOrderStatus
+          orderId={orderDetails._id}
+          currentStatus={orderDetails.order_status ?? "PENDING"}
+          onUpdate={() => {
+            setStatusChangeModal(false);
+            refetch();
+            queryClient.invalidateQueries(["orders"]);
+          }}
+          onClose={() => {
+            setStatusChangeModal(false);
+          }}
+          orderDetails={orderDetails}
+        />
+      </Modal>
+
       {/* Header Section */}
       <Flex w="100%" justify="space-between" align="center" my="sm">
         <Text weight="bold" fz="lg" color={COLORS.fontPrimary}>
@@ -58,6 +151,7 @@ const OrderDetails = () => {
             className="primary_btn"
             leftIcon={<IconStatusChange />}
             size="xs"
+            onClick={() => setStatusChangeModal(true)}
           >
             Change Status
           </Button>
@@ -72,18 +166,73 @@ const OrderDetails = () => {
         </Flex>
       </Flex>
 
+      <Stepper
+        my="lg"
+        active={active}
+        completedIcon={active < 6 ? <IconCircleCheck /> : <IconX />}
+        color={active < 6 ? "green" : "transparent"}
+      >
+        <Stepper.Step
+          icon={<IconHourglass size="1.1rem" />}
+          description="Pending"
+        />
+        <Stepper.Step
+          icon={<IconUserCheck size="1.1rem" />}
+          description="Confirmed"
+        />
+        <Stepper.Step icon={<IconBox size="1.1rem" />} description="Packed" />
+        <Stepper.Step
+          icon={<IconTruckDelivery size="1.1rem" />}
+          description="Shipped"
+        />
+        <Stepper.Step
+          icon={<IconCheckbox size="1.1rem" />}
+          description="Delivered"
+        />
+        <Stepper.Step
+          icon={<IconExchangeOff size="1.1rem" />}
+          description="Returned"
+        />
+        <Stepper.Step
+          icon={<IconX size="1.1rem" />}
+          description="Cancelled"
+          color="red"
+        />
+      </Stepper>
+
       {/* Order Information Section */}
       <OrderInfoSection orderDetails={orderDetails} />
 
-      {/* Ordered Products Section */}
-      <Stack spacing="lg" mt="xl">
-        <Text weight="bold" fz="lg" color={COLORS.fontPrimary}>
-          Ordered Products
-        </Text>
-        {orderDetails.ordered_products.map((product, index) => (
-          <ProductCard key={index} product={product} />
-        ))}
-      </Stack>
+      <Grid columns={24} gutter="md">
+        <Grid.Col span={12}>
+          <ShippingInfoSection orderDetails={orderDetails} />
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <DeliveryInfoSection orderDetails={orderDetails} />
+        </Grid.Col>
+      </Grid>
+
+      <Grid columns={24} gutter="md">
+        <Grid.Col span={12}>
+          {/* Ordered Products Section */}
+          <Stack spacing="lg" mt="xl">
+            <Text weight="bold" fz="lg" color={COLORS.fontPrimary}>
+              Ordered Products
+            </Text>
+            {orderDetails.ordered_products.map((product, index) => (
+              <ProductCard key={index} product={product} />
+            ))}
+          </Stack>
+        </Grid.Col>
+
+        <Grid.Col span={12}>
+          <Stack spacing="lg" mt="xl">
+            <div>
+              <OrderLifeCycle orderDetails={orderDetails} />
+            </div>
+          </Stack>
+        </Grid.Col>
+      </Grid>
     </div>
   );
 };
@@ -128,8 +277,8 @@ const OrderInfoSection = ({ orderDetails }) => (
         />
         <OrderInfoRow
           icon={<IconUser />}
-          label="Customer"
-          value={`${orderDetails.user_id.name} (${orderDetails.user_id.email})`}
+          label="Vendor"
+          value={`${orderDetails.user_id.name} (${orderDetails.user_id.phone})`}
         />
         <OrderInfoRow
           icon={<IconShoppingCart />}
@@ -157,6 +306,59 @@ const OrderInfoSection = ({ orderDetails }) => (
           icon={<IconStatusChange />}
           label="Status"
           value={orderDetails.order_status}
+        />
+      </Grid.Col>
+    </Grid>
+  </Card>
+);
+
+const ShippingInfoSection = ({ orderDetails }) => (
+  <Card shadow="sm" padding="lg" mt="sm" withBorder>
+    <Text weight="bold" fz="lg" mb="xs" color={COLORS.fontPrimary}>
+      Shipping Information
+    </Text>
+    <Divider my="sm" />
+
+    <Grid columns={24} gutter="md">
+      <Grid.Col span={24}>
+        <OrderInfoRow
+          icon={<IconTruckLoading />}
+          label="Shipping Medium"
+          value={orderDetails.shipping_medium ?? "N/A"}
+        />
+        <OrderInfoRow
+          icon={<IconDatabase />}
+          label="Shipping Info"
+          value={orderDetails.shipping_info ?? "N/A"}
+        />
+      </Grid.Col>
+    </Grid>
+  </Card>
+);
+
+const DeliveryInfoSection = ({ orderDetails }) => (
+  <Card shadow="sm" padding="lg" mt="sm" withBorder>
+    <Text weight="bold" fz="lg" mb="xs" color={COLORS.fontPrimary}>
+      Delivery Information
+    </Text>
+    <Divider my="sm" />
+
+    <Grid columns={24} gutter="md">
+      <Grid.Col span={24}>
+        <OrderInfoRow
+          icon={<IconTruckLoading />}
+          label="Apx. Delivery Date"
+          value={orderDetails.apx_delivery_date ?? "N/A"}
+        />
+        <OrderInfoRow
+          icon={<IconTruckLoading />}
+          label="Delivery Date"
+          value={orderDetails.delivery_date ?? "N/A"}
+        />
+        <OrderInfoRow
+          icon={<IconTruckLoading />}
+          label="Delivery Info"
+          value={orderDetails.delivery_info ?? "N/A"}
         />
       </Grid.Col>
     </Grid>
@@ -215,7 +417,7 @@ const ProductCard = ({ product }) => (
           src={product.productId.productPictures.find((p) => p.default)?.img}
           alt={product.productId.name}
           style={{
-            width: "15vw",
+            width: "5vw",
             height: "auto",
             objectFit: "cover",
             borderRadius: 8,
